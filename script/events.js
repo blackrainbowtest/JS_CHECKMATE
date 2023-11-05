@@ -240,22 +240,24 @@ function mainTakingLogic(event, targetObject, targetChessBoard) {
             let startPositions = { i: Number(choosedFigure.position.i), j: Number(choosedFigure.position.j) }
             let targetPositions = { i: Number(event.currentTarget.dataset.coordinates[0]), j: Number(event.currentTarget.dataset.coordinates[1]) }
 
-            let emptyFigureObj = {
-                symbol: '',
-                position: { i: choosedFigure.position.i, j: choosedFigure.position.j },
+            if (!checkChecker(startPositions, targetPositions, gameSettingsData)) {
+                let emptyFigureObj = {
+                    symbol: '',
+                    position: { i: choosedFigure.position.i, j: choosedFigure.position.j },
+                }
+    
+                // clear enemy obj in new place
+                gameSettingsData.chessBoard[targetPositions.i][targetPositions.j].querySelector('div').innerHTML = ''
+    
+                // move fugure to new place
+                gameSettingsData.figureMatrix[targetPositions.i][targetPositions.j].isAlive = false
+                gameSettingsData.figureMatrix[targetPositions.i][targetPositions.j].killer = { ...choosedFigure }
+                killedFigures.push(gameSettingsData.figureMatrix[targetPositions.i][targetPositions.j])
+                gameSettingsData.figureMatrix[targetPositions.i][targetPositions.j] = emptyFigureObj
+    
+                figureMoveLogic(startPositions, targetPositions)
+                if (!Object.values(checkPoint[checkers.gameTurn ? 'white' : 'black']).some(array => array.length > 0)) { checkers.gameTurn = !checkers.gameTurn }
             }
-
-            // clear enemy obj in new place
-            gameSettingsData.chessBoard[targetPositions.i][targetPositions.j].querySelector('div').innerHTML = ''
-
-            // move fugure to new place
-            gameSettingsData.figureMatrix[targetPositions.i][targetPositions.j].isAlive = false
-            gameSettingsData.figureMatrix[targetPositions.i][targetPositions.j].killer = { ...choosedFigure }
-            killedFigures.push(gameSettingsData.figureMatrix[targetPositions.i][targetPositions.j])
-            gameSettingsData.figureMatrix[targetPositions.i][targetPositions.j] = emptyFigureObj
-
-            figureMoveLogic(startPositions, targetPositions)
-            if (!Object.values(checkPoint[checkers.gameTurn ? 'white' : 'black']).some(array => array.length > 0)) { checkers.gameTurn = !checkers.gameTurn }
             clearCache()
         }
     }

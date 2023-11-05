@@ -73,15 +73,30 @@ export function getDiagonalMoves(choosedFigure, gameSettingsData, isCheckCheckin
                         }
                         if (currentFigure.type === 'pawn') {
                             if ((currentFigure.position.i === choosedFigure.position.i + move.i) && (currentFigure.position.j === choosedFigure.position.j + move.j)) {
-                                temp.enemyPoint.push(currentCell.id)
-                                temp.moves.pop();
-                                break;
+                                if(choosedFigure.color === 'white') {
+                                    if (currentFigure.position.i < choosedFigure.position.i) {
+                                        temp.enemyPoint.push(currentCell.id)
+                                        temp.moves.pop();
+                                        break;
+                                    }
+                                } else {
+                                    if (currentFigure.position.i > choosedFigure.position.i) {
+                                        temp.enemyPoint.push(currentCell.id)
+                                        temp.moves.pop();
+                                        break;
+                                    }
+                                }
                             }
                             temp.moves.pop();
                             break;
                         }
                         if (currentFigure.type === 'king') {
-                            console.log(currentFigure);
+                            if ((currentFigure.position.i === choosedFigure.position.i + move.i) && (currentFigure.position.j === choosedFigure.position.j + move.j)) {
+                                temp.enemyPoint.push(currentCell.id)
+                                temp.moves.pop();
+                                break;
+                            }
+                            temp.moves.pop();
                             break;
                         }
                     }
