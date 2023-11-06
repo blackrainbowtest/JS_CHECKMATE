@@ -42,7 +42,7 @@ export function initGame(sets, num, figure) {
         for (let j = 0; j < num; j++) {
             let chessCell = document.createElement('div')
             chessCell.id = `${String.fromCharCode(sets.data.letter + j)}${num - i}`
-            chessCell.classList.add('flex', 'center', 'chessCell', 'cell', 'font', ((i + j) % 2 === 0) ? 'black': 'white')
+            chessCell.classList.add('flex', 'center', 'chessCell', 'cell', 'font', ((i + j) % 2 === 0) ? 'black' : 'white')
             let figureMatrixObj = createChessFugur(chessCell.id, { i, j })          // figure obj
             let figureDiv = document.createElement('div')
             figureDiv.classList.add('flex', 'center', 'chessCell', 'cell', 'font')
@@ -80,11 +80,16 @@ export function initGame(sets, num, figure) {
             symbol: '',
             position: position,
         }
+        if (position?.i == 4 && id[0] === 'f') {
+            figureObj.color = position?.i == 0 ? 'black' : 'black'
+            figureObj.type = 'queen'
+            figureObj.symbol = position?.i == 0 ? figure.black.queen : figure.black.queen
+        }
 
         if ((position?.i == 6) || (position?.i == 1)) {
-            figureObj.color = position?.i == 1 ? 'black' : 'white'
-            figureObj.type = 'pawn'
-            figureObj.symbol = position?.i == 1 ? figure.black.pawn : figure.white.pawn
+            // figureObj.color = position?.i == 1 ? 'black' : 'white'
+            // figureObj.type = 'pawn'
+            // figureObj.symbol = position?.i == 1 ? figure.black.pawn : figure.white.pawn
         } else if ((position?.i == 7) || (position?.i == 0)) {
             switch (id[0]) {
                 case 'a':
@@ -95,20 +100,20 @@ export function initGame(sets, num, figure) {
                     break;
                 case 'b':
                 case 'g':
-                    figureObj.color = position?.i == 0 ? 'black' : 'white'
-                    figureObj.type = 'knight'
-                    figureObj.symbol = position?.i == 0 ? figure.black.knight : figure.white.knight
+                    // figureObj.color = position?.i == 0 ? 'black' : 'white'
+                    // figureObj.type = 'knight'
+                    // figureObj.symbol = position?.i == 0 ? figure.black.knight : figure.white.knight
                     break;
                 case 'c':
                 case 'f':
-                    figureObj.color = position?.i == 0 ? 'black' : 'white'
-                    figureObj.type = 'bishop'
-                    figureObj.symbol = position?.i == 0 ? figure.black.bishop : figure.white.bishop
+                    // figureObj.color = position?.i == 0 ? 'black' : 'white'
+                    // figureObj.type = 'bishop'
+                    // figureObj.symbol = position?.i == 0 ? figure.black.bishop : figure.white.bishop
                     break;
                 case 'd':
-                    figureObj.color = position?.i == 0 ? 'black' : 'white'
-                    figureObj.type = 'queen'
-                    figureObj.symbol = position?.i == 0 ? figure.black.queen : figure.white.queen
+                    // figureObj.color = position?.i == 0 ? 'black' : 'white'
+                    // figureObj.type = 'queen'
+                    // figureObj.symbol = position?.i == 0 ? figure.black.queen : figure.white.queen
                     break;
                 case 'e':
                     figureObj.color = position?.i == 0 ? 'black' : 'white'
@@ -126,7 +131,7 @@ export function initGame(sets, num, figure) {
             figureObj.isCheck = false
             figureObj.steps = 0
             figureObj.killer = {}
-        } 
+        }
 
         return figureObj
     }

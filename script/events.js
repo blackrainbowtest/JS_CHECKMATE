@@ -177,9 +177,14 @@ function mainMovementLogic(event) {
     let targetPositions = { i: Number(event.currentTarget.dataset.coordinates[0]), j: Number(event.currentTarget.dataset.coordinates[1]) }
 
     if (!checkChecker(startPositions, targetPositions, gameSettingsData)) {
-        figureMoveLogic(startPositions, targetPositions)
         // kingClastingLogic
-        if (choosedFigure.type === 'king' && Math.abs(Math.abs(startPositions.j) - Math.abs(targetPositions.j)) === 2) kingClastingLogic(startPositions, targetPositions)
+        if (choosedFigure.type === 'king' && Math.abs(Math.abs(startPositions.j) - Math.abs(targetPositions.j)) === 2) {
+            if (kingClastingLogic(startPositions, targetPositions, choosedFigure)) {
+                figureMoveLogic(startPositions, targetPositions)
+            }
+        } else {
+            figureMoveLogic(startPositions, targetPositions)
+        }
         if (!Object.values(checkPoint[checkers.gameTurn ? 'white' : 'black']).some(array => array.length > 0)) { checkers.gameTurn = !checkers.gameTurn }
     }
     clearCache()
@@ -211,19 +216,57 @@ function figureMoveLogic(startPositions, targetPositions) {
     }
 }
 
-function kingClastingLogic(startPositions, targetPositions) {
+function kingClastingLogic(startPositions, targetPositions, choosedFigure) {
     let rookClastingPosition = { i: targetPositions.i, j: 0 }
     let rookStartPosition = { i: startPositions.i, j: 0 }
-    if (startPositions.j < targetPositions.j) {
-        rookClastingPosition.j = targetPositions.j - 1
-        rookStartPosition.j = 7
-    } else {
-        rookClastingPosition.j = targetPositions.j + 1
-        rookStartPosition.j = 0
+    let isClasting = false
+    if (!checkChecker(targetPositions, startPositions, gameSettingsData)) {
+
+        if (startPositions.j < targetPositions.j) {
+            if (!kingClastingCheckLogic(startPositions, targetPositions, -1)) {
+                rookClastingPosition.j = targetPositions.j - 1
+                rookStartPosition.j = 7
+            } else {
+                return isClasting
+            }
+        } else {
+            if (!kingClastingCheckLogic(startPositions, targetPositions, 1)) {
+                rookClastingPosition.j = targetPositions.j + 1
+                rookStartPosition.j = 0
+            } else {
+                return isClasting
+            }
+        }
+        figureMoveLogic(rookStartPosition, rookClastingPosition)
+        isClasting = true
     }
-    figureMoveLogic(rookStartPosition, rookClastingPosition)
+    return isClasting
 }
 
+function kingClastingCheckLogic(startPositions, targetPositions, increment) {
+    // get doublicate of main matrix
+    let settingsData = settingDataGenerator(startPositions, { ...targetPositions, j: targetPositions.j + increment }, choosedFigure)
+    let kingData = JSON.parse(JSON.stringify(kingFigures))
+    kingData[checkers.gameTurn ? 'white' : 'black'] = { ...settingsData.figureMatrix[targetPositions.i][targetPositions.j + increment] }
+
+    return checkWayPointLogic(choosedFigure.color, settingsData, kingData)
+}
+
+function settingDataGenerator(startPositions, targetPositions, choosedFigure) {
+    // preWalking check detect
+    let emptyFigureObj = {
+        symbol: '',
+        position: { i: choosedFigure.position.i, j: choosedFigure.position.j },
+    }
+
+    let data = JSON.parse(JSON.stringify(gameSettingsData))
+    data.chessBoard = [...gameSettingsData.chessBoard]
+    data.figureMatrix[targetPositions.i][targetPositions.j] = data.figureMatrix[startPositions.i][startPositions.j]
+    data.figureMatrix[targetPositions.i][targetPositions.j].position = targetPositions
+    data.figureMatrix[startPositions.i][startPositions.j] = emptyFigureObj
+
+    return data
+}
 
 
 
@@ -245,16 +288,16 @@ function mainTakingLogic(event, targetObject, targetChessBoard) {
                     symbol: '',
                     position: { i: choosedFigure.position.i, j: choosedFigure.position.j },
                 }
-    
+
                 // clear enemy obj in new place
                 gameSettingsData.chessBoard[targetPositions.i][targetPositions.j].querySelector('div').innerHTML = ''
-    
+
                 // move fugure to new place
                 gameSettingsData.figureMatrix[targetPositions.i][targetPositions.j].isAlive = false
                 gameSettingsData.figureMatrix[targetPositions.i][targetPositions.j].killer = { ...choosedFigure }
                 killedFigures.push(gameSettingsData.figureMatrix[targetPositions.i][targetPositions.j])
                 gameSettingsData.figureMatrix[targetPositions.i][targetPositions.j] = emptyFigureObj
-    
+
                 figureMoveLogic(startPositions, targetPositions)
                 if (!Object.values(checkPoint[checkers.gameTurn ? 'white' : 'black']).some(array => array.length > 0)) { checkers.gameTurn = !checkers.gameTurn }
             }
